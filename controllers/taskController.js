@@ -43,20 +43,23 @@ const sendMail = async (email, subject, title, description, isReminder, isDelete
 };
 
 
-const scheduleEmail = (email, title, description, datetime) => {
+const scheduleEmail = (task) => {
     console.log("Scheduling email for task...");
-    const reminderTime = moment(datetime).subtract(5, 'hours').subtract(30, 'minutes');
-    const delayMilliseconds = reminderTime.diff(moment());
+    
+    const reminderTime = moment(task.datetime).subtract(5, 'hours').subtract(30, 'minutes');
+    const now = moment();
+
+    const delayMilliseconds = reminderTime.diff(now);
 
     console.log('Reminder email will be sent after:', delayMilliseconds, 'milliseconds');
 
     setTimeout(async () => {
         try {
             console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
-            console.log('Task details:', { email, title, description });
+            console.log('Task details:', task);
 
-            // Provide the correct email address from the task object
-            await sendMail(email.email, "Task Due Soon", title, description, true, false);
+            // Ensure that task.email, task.title, and task.description exist
+            await sendMail(task.email, "Task Due Soon", task.title, task.description, true, false);
 
             console.log('Reminder Email sent successfully');
         } catch (error) {
@@ -65,6 +68,7 @@ const scheduleEmail = (email, title, description, datetime) => {
         }
     }, delayMilliseconds);
 };
+
 
 
 const addTask = async (req, res) => {
