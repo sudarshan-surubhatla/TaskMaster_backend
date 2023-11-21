@@ -51,11 +51,16 @@ const scheduleEmail = (task) => {
         reminderTime.format('mm HH DD MM ddd'),
         async function () {
             try {
-                console.log('Schedule function called');
+                console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
+                console.log('Task details:', task);
+
+                // Uncomment the line below if you want to test sending a reminder email
                 await sendMail(task.email, "Task Due Soon", task.title, task.description, true, false);
+                
                 console.log('Reminder Email sent successfully');
             } catch (error) {
                 console.error('Error sending email:', error.message);
+                console.error('Error stack:', error.stack);
             } finally {
                 job.stop();
             }
@@ -63,6 +68,7 @@ const scheduleEmail = (task) => {
         { scheduled: true }
     );
 };
+
 
 
 const addTask = async (req, res) => {
