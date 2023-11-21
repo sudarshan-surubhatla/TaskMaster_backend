@@ -44,12 +44,11 @@ const sendMail = async (email, subject, title, description, isReminder, isDelete
 const scheduleEmail = (task) => {
     console.log("Scheduling email for task...");
 
-    // Assuming task.datetime is a string in a specific format, replace "your-date-format" accordingly
-    const datetimeFormat = { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
+    // Assuming task.datetime is a string in the format 'November 22, 2023 12:42 AM'
+    const datetimeFormat = { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
 
     // Parse the task.datetime using Intl.DateTimeFormat
     const parsedDatetime = new Date(task.datetime);
-    const formattedDatetime = new Intl.DateTimeFormat('en-US', datetimeFormat).format(parsedDatetime);
 
     // Check if the parsing was successful
     if (isNaN(parsedDatetime.getTime())) {
@@ -58,11 +57,7 @@ const scheduleEmail = (task) => {
     }
 
     // Calculate the delay in milliseconds
-    const reminderTime = new Date(parsedDatetime.getTime() - (5 * 60 + 30) * 60 * 1000);
-    const currentTime = new Date();
-
-    // Calculate the delay in milliseconds
-    const delay = reminderTime - currentTime;
+    const delay = parsedDatetime - Date.now();
 
     // Use setTimeout to schedule the email at the exact time
     setTimeout(async () => {
@@ -80,6 +75,7 @@ const scheduleEmail = (task) => {
         }
     }, delay);
 };
+
 
 
 
