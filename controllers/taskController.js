@@ -21,8 +21,8 @@ const sendMail = (email, subject, title, description, isReminder, isDeleted) => 
         subject: subject,
         html: `
             <div style="font-family: 'Roboto', sans-serif; background-color: #f9f9f9; padding: 20px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: ${isReminder ? '#007BFF':'#FF5555'}; text-align: center; margin-bottom: 20px;">
-                    ${isReminder ? 'Task Reminder' : isDeleted ? 'Task Deleted' : 'Task Added Successfully'}
+            <h1 style="color: ${isDeleted ? '#FF5555' : '#007BFF'}; text-align: center; margin-bottom: 20px;">
+                    ${isDeleted ? 'Task Deleted' : isReminder ? 'Task Reminder' : 'Task Added Successfully'}
                 </h1>
                 <div style="background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                     <h2 style="color: #333; margin-bottom: 10px;">Title: ${title}</h2>
