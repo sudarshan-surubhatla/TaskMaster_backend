@@ -50,21 +50,14 @@ const scheduleEmail = (task) => {
 
     const job = cron.schedule(
         reminderTime.format('mm HH DD MM ddd'),
-        function () {
-            const { email, title, description } = task;
+        async function () {
             try {
                 console.log('Schedule function called');
-                sendMail(email, "Task Due Soon", title, description, true, false)
-                    .then(() => {
-                        console.log('Reminder Email sent successfully');
-                        job.stop();
-                    })
-                    .catch((error) => {
-                        console.error('Error sending email:', error.message);
-                        job.stop();
-                    });
+                await sendMail(task.email, "Task Due Soon", task.title, task.description, true, false);
+                console.log('Reminder Email sent successfully');
             } catch (error) {
-                console.error('Error in schedule function:', error.message);
+                console.error('Error sending email:', error.message);
+            } finally {
                 job.stop();
             }
         },
