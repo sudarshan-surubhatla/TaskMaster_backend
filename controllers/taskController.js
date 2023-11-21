@@ -8,40 +8,39 @@ import cron from 'node-cron';
 dotenv.config();
 
 // Function to send email
-const sendMail = (email, subject, title, description, isReminder, isDeleted) => {
-    var transporter = createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.GMAIL_USERNAME,
-            pass: process.env.GMAIL_PASSWORD
-        }
-    });
+const sendMail = async (email, subject, title, description, isReminder, isDeleted) => {
+    try {
+        var transporter = createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.GMAIL_USERNAME,
+                pass: process.env.GMAIL_PASSWORD
+            }
+        });
 
-    const mailOptions = {
-        from: 'taskmaster.mern@gmail.com',
-        to: email,
-        subject: subject,
-        html: `
-            <div style="font-family: 'Roboto', sans-serif; background-color: #f9f9f9; padding: 20px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: ${isDeleted ? '#FF5555' : '#007BFF'}; text-align: center; margin-bottom: 20px;">
-                    ${isDeleted ? 'Task Deleted' : isReminder ? 'Task Due Soon' : 'Task Added Successfully'}
-                </h1>
-                <div style="background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                    <h2 style="color: #333; margin-bottom: 10px;">Title: ${title}</h2>
-                    <p style="color: #555; margin-bottom: 0;">Description: ${description}</p>
-                </div>
-                <p style="color: #777; font-size: 14px; text-align: center;">Thank you for using TaskMaster!</p>
-            </div>`,
+        const mailOptions = {
+            from: 'taskmaster.mern@gmail.com',
+            to: email,
+            subject: subject,
+            html: `
+                <div style="font-family: 'Roboto', sans-serif; background-color: #f9f9f9; padding: 20px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: ${isDeleted ? '#FF5555' : '#007BFF'}; text-align: center; margin-bottom: 20px;">
+                        ${isDeleted ? 'Task Deleted' : isReminder ? 'Task Due Soon' : 'Task Added Successfully'}
+                    </h1>
+                    <div style="background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                        <h2 style="color: #333; margin-bottom: 10px;">Title: ${title}</h2>
+                        <p style="color: #555; margin-bottom: 0;">Description: ${description}</p>
+                    </div>
+                    <p style="color: #777; font-size: 14px; text-align: center;">Thank you for using TaskMaster!</p>
+                </div>`
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent: ' + info.response);
+    } catch (error) {
+        console.error('Error sending email:', error.message);
     }
-
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
-}
+};
 
 const scheduleEmail = (task) => {
     console.log("Scheduling email for task...");
