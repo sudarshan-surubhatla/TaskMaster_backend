@@ -71,7 +71,7 @@ const addTask = async (req, res) => {
         const newTask = new taskModel({
             title,
             description,
-            datetime: istDateTime,
+            datetime: utcDateTime,
             completed: false,
             userId,
             userTimeZone,
