@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import cron from 'node-cron';
 dotenv.config();
 
-const sendMail = (email, subject, title, description, isReminder = false, isDeleted = false) => {
+const sendMail = (email, subject, title, description, isReminder, isDeleted) => {
     var transporter = createTransport({
         service: 'gmail',
         auth: {
@@ -21,8 +21,8 @@ const sendMail = (email, subject, title, description, isReminder = false, isDele
         subject: subject,
         html: `
             <div style="font-family: 'Roboto', sans-serif; background-color: #f9f9f9; padding: 20px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
-            <h1 style="color: ${isDeleted ? '#FF5555' : '#007BFF'}; text-align: center; margin-bottom: 20px;">
-                    ${isDeleted ? 'Task Deleted' : isReminder ? 'Task Reminder' : 'Task Added Successfully'}
+            <h1 style="color: ${isReminder ? '#007BFF':'#FF5555'}; text-align: center; margin-bottom: 20px;">
+                    ${isReminder ? 'Task Reminder' : isDeleted ? 'Task Deleted' : 'Task Added Successfully'}
                 </h1>
                 <div style="background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                     <h2 style="color: #333; margin-bottom: 10px;">Title: ${title}</h2>
@@ -46,10 +46,12 @@ const scheduleEmail = (task) => {
     console.log('Reminder email will be sent at:', reminderTime.format('YYYY-MM-DD HH:mm:ss'));
     const job = cron.schedule(
         reminderTime.format('mm HH DD MM ddd'),
+        console.log(reminderTime);
         async function() {
             const { email, title, description } = task;
             try {
-                await sendMail(email, "Task Due Reminder", title, description, true, false);
+                console.log('Schedule function called');
+                sendMail(email, "Task Due Reminder", title, description, true, false);
                 console.log('Reminder Email sent successfully');
             } catch (error) {
                 console.error('Error sending email:', error.message);
@@ -85,7 +87,7 @@ const addTask = async (req, res) => {
         });
 
         const savedTask = await newTask.save();
-        sendMail(user[0].email, "Task Added", title, description);
+        sendMail(user[0].email, "Task Added", title, description,false,false);
         scheduleEmail(savedTask);
         
         return res.status(200).json({ message: "Task added successfully" });
