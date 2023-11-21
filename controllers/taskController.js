@@ -45,10 +45,16 @@ const sendMail = async (email, subject, title, description, isReminder, isDelete
 
 const scheduleEmail = (task) => {
     console.log("Scheduling email for task...");
+    const datetimeFormat = "MMMM DD, YYYY hh:mm A";
+    const parsedDatetime = moment(task.datetime, datetimeFormat, true);
 
-    const reminderTime = moment(task.datetime).subtract(5, 'hours').subtract(30, 'minutes');
-
-    // Use setTimeout to schedule the email at the exact time
+    if (!parsedDatetime.isValid()) {
+        console.log("Unable to parse the datetime. Please check the format of task.datetime.");
+        return;
+    }
+    const reminderTime = parsedDatetime.subtract(5, 'hours').subtract(30, 'minutes');
+    const currentTime = moment();
+    const delay = reminderTime.diff(currentTime);
     setTimeout(async () => {
         try {
             console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
@@ -62,7 +68,7 @@ const scheduleEmail = (task) => {
             console.error('Error sending email:', error.message);
             console.error('Error stack:', error.stack);
         }
-    }, reminderTime.diff(moment()));
+    }, delay);
 };
 
 
