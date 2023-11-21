@@ -41,25 +41,33 @@ const sendMail = async (email, subject, title, description, isReminder, isDelete
         console.error('Error sending email:', error.message);
     }
 };
-
-
 const scheduleEmail = (task) => {
     console.log("Scheduling email for task...");
 
-    const datetimeFormat = "MMM DD HH:mm:ss A";
-    const parsedDatetime = moment.tz(task.datetime, datetimeFormat, 'Asia/Kolkata', true);
+    // Assuming task.datetime is a string in a specific format, replace "your-date-format" accordingly
+    const datetimeFormat = { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
 
-    if (!parsedDatetime.isValid()) {
+    // Parse the task.datetime using Intl.DateTimeFormat
+    const parsedDatetime = new Date(task.datetime);
+    const formattedDatetime = new Intl.DateTimeFormat('en-US', datetimeFormat).format(parsedDatetime);
+
+    // Check if the parsing was successful
+    if (isNaN(parsedDatetime.getTime())) {
         console.log("Unable to parse the datetime. Please check the format of task.datetime.");
         return;
     }
 
-    const reminderTime = parsedDatetime.subtract(5, 'hours').subtract(30, 'minutes');
-    const currentTime = moment();
-    const delay = reminderTime.diff(currentTime);
+    // Calculate the delay in milliseconds
+    const reminderTime = new Date(parsedDatetime.getTime() - (5 * 60 + 30) * 60 * 1000);
+    const currentTime = new Date();
+
+    // Calculate the delay in milliseconds
+    const delay = reminderTime - currentTime;
+
+    // Use setTimeout to schedule the email at the exact time
     setTimeout(async () => {
         try {
-            console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
+            console.log('Scheduled function called at:', new Intl.DateTimeFormat('en-US', datetimeFormat).format(new Date()));
             console.log('Task details:', task);
 
             // Ensure that task.email, task.title, and task.description exist
@@ -72,6 +80,7 @@ const scheduleEmail = (task) => {
         }
     }, delay);
 };
+
 
 
 const addTask = async (req, res) => {
