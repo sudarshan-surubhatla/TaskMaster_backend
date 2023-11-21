@@ -55,8 +55,8 @@ const scheduleEmail = (email, title, description, datetime) => {
             console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
             console.log('Task details:', { email, title, description });
 
-            // Uncomment the line below if you want to test sending a reminder email
-            await sendMail(email, "Task Due Soon", title, description, true, false);
+            // Provide the correct email address from the task object
+            await sendMail(email.email, "Task Due Soon", title, description, true, false);
 
             console.log('Reminder Email sent successfully');
         } catch (error) {
