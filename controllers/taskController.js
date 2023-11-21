@@ -48,7 +48,7 @@ const scheduleEmail = (email, title, description, datetime) => {
     console.log('Reminder email will be sent at:', reminderTime.format('mm HH DD MM ddd'));
 
     const job = cron.schedule(
-        reminderTime.toDate(), // Use toDate() to get a JavaScript Date object
+        reminderTime.toDate().toISOString(), // Use toDate() to get a JavaScript Date object
         async function () {
             try {
                 console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
