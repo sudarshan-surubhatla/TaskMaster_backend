@@ -47,8 +47,8 @@ const scheduleEmail = (task) => {
         async function() {
             const { email, title, description } = task;
             try {
-                await sendMail(email, "Task Due Reminder", title, description, true);
-                console.log('Email sent successfully');
+                await sendMail(email, "Task Due Reminder", title, description, true, false);
+                console.log('Reminder Email sent successfully');
             } catch (error) {
                 console.error('Error sending email:', error.message);
             }
