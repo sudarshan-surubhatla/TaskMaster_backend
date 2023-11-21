@@ -45,6 +45,7 @@ const scheduleEmail = (task) => {
     const reminderTime =moment(task.datetime).add(5, 'hours').add(30, 'minutes');
     console.log('Reminder email will be sent at:', reminderTime.format('mm HH DD MM ddd'));
     const cronString = `${reminderTime.minutes()} ${reminderTime.hours()} ${reminderTime.date()} ${reminderTime.month() + 1} *`;
+    console.log('Scheduled cron string:', cronString);
     const job = cron.schedule(
        cronString ,
         async function() {
