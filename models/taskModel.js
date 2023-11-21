@@ -12,5 +12,7 @@ const taskInstance = mongoose.Schema(
   },
   { timestamps: true }
 );
+
 const taskModel = mongoose.model("Task", taskInstance);
+
 export default taskModel;

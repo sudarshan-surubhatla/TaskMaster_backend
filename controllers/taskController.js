@@ -14,6 +14,7 @@ const sendMail = (email, subject, title, description, isReminder = false, isDele
             pass: process.env.GMAIL_PASSWORD
         }
     });
+
     const mailOptions = {
         from: 'taskmaster.mern@gmail.com',
         to: email,
@@ -30,6 +31,7 @@ const sendMail = (email, subject, title, description, isReminder = false, isDele
                 <p style="color: #777; font-size: 14px; text-align: center;">Thank you for using TaskMaster!</p>
             </div>`,
     }
+
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log(error);
@@ -39,16 +41,18 @@ const sendMail = (email, subject, title, description, isReminder = false, isDele
     });
 }
 const scheduleEmail = (task) => {
+    console.log("Scheduling email for task:", task);
     const job = cron.schedule(
         moment(task.datetime).tz(task.userTimeZone).format('mm HH DD MM ddd'),
-        async function () {
+        async function() {
             const { email, title, description } = task;
             try {
-                await sendMail(email, "Task Due Reminder", title, description, true, false);
+                await sendMail(email, "Task Due Reminder", title, description, true);
+                console.log('Email sent successfully');
             } catch (error) {
                 console.error('Error sending email:', error.message);
             }
-            this.stop();
+            this.stop(); 
         },
         { scheduled: true }
     );
@@ -71,13 +75,12 @@ const addTask = async (req, res) => {
             completed: false,
             userId,
             userTimeZone,
-            email: user[0].email,
+            email: user[0].email, 
         });
 
         const savedTask = await newTask.save();
-        console.log("Task added Successfully")
         sendMail(user[0].email, "Task Added", title, description);
-        scheduleEmail(savedTask);
+        scheduleEmail(savedTask); 
         return res.status(200).json({ message: "Task added successfully" });
     } catch (error) {
         console.error("Error adding task:", error);
@@ -103,7 +106,6 @@ const removeTask = (req, res) => {
             res.status(501).json({ message: error.message });
         });
 };
-
 
 const updateTask = async (req, res) => {
     const { id } = req.params;
