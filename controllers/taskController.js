@@ -48,7 +48,8 @@ const scheduleEmail = (task) => {
 
     const reminderTime = moment(task.datetime).subtract(5, 'hours').subtract(30, 'minutes');
 
-    const sendReminder = async () => {
+    // Use setTimeout to schedule the email at the exact time
+    setTimeout(async () => {
         try {
             console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
             console.log('Task details:', task);
@@ -61,13 +62,8 @@ const scheduleEmail = (task) => {
             console.error('Error sending email:', error.message);
             console.error('Error stack:', error.stack);
         }
-    };
-
-    // Use setTimeout with a fixed delay of 0 milliseconds
-    setTimeout(sendReminder, 0);
+    }, reminderTime.diff(moment()));
 };
-
-
 
 
 const addTask = async (req, res) => {
