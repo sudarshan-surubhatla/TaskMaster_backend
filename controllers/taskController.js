@@ -42,13 +42,22 @@ const sendMail = async (email, subject, title, description, isReminder, isDelete
     }
 };
 
+
+const convertDateToCronExpression = (date) => {
+    const cronDate = moment(date);
+    const cronExpression = `${cronDate.minutes()} ${cronDate.hours()} ${cronDate.date()} ${cronDate.month() + 1} *`;
+    return cronExpression;
+};
+
 const scheduleEmail = (email, title, description, datetime) => {
     console.log("Scheduling email for task...");
     const reminderTime = moment(datetime).subtract(5, 'hours').subtract(30, 'minutes');
     console.log('Reminder email will be sent at:', reminderTime.format('mm HH DD MM ddd'));
 
+    const cronExpression = convertDateToCronExpression(reminderTime.toDate());
+
     const job = cron.schedule(
-        reminderTime.toDate().toISOString(), // Use toDate() to get a JavaScript Date object
+        cronExpression,
         async function () {
             try {
                 console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
