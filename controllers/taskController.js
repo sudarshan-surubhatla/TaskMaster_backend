@@ -43,18 +43,31 @@ const sendMail = async (email, subject, title, description, isReminder, isDelete
 };
 
 
+const moment = require('moment-timezone');
+
 const scheduleEmail = (task) => {
     console.log("Scheduling email for task...");
-    const datetimeFormat = "MMMM DD, YYYY hh:mm A";
-    const parsedDatetime = moment(task.datetime, datetimeFormat, true);
 
+    // Assuming task.datetime is a string in a specific format, replace "your-date-format" accordingly
+    const datetimeFormat = "MMM DD HH:mm:ss A";
+    
+    // Parse the task.datetime using the determined format and set the time zone
+    const parsedDatetime = moment(task.datetime, datetimeFormat, true).tz(task.userTimeZone, true);
+
+    // Check if the parsing was successful
     if (!parsedDatetime.isValid()) {
         console.log("Unable to parse the datetime. Please check the format of task.datetime.");
         return;
     }
+
+    // Calculate the delay in milliseconds
     const reminderTime = parsedDatetime.subtract(5, 'hours').subtract(30, 'minutes');
     const currentTime = moment();
+
+    // Calculate the delay in milliseconds
     const delay = reminderTime.diff(currentTime);
+
+    // Use setTimeout to schedule the email at the exact time
     setTimeout(async () => {
         try {
             console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
@@ -70,7 +83,6 @@ const scheduleEmail = (task) => {
         }
     }, delay);
 };
-
 
 const addTask = async (req, res) => {
     const { title, description, datetime, userTimeZone } = req.body;
