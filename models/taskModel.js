@@ -9,6 +9,7 @@ const taskInstance = mongoose.Schema(
     datetime: { type: Date, required: false },
     userTimeZone: { type: String, required: false },
     email: { type: String, required: true }, 
+    reminderSent: { type: Boolean, default: false }
   },
   { timestamps: true }
 );
