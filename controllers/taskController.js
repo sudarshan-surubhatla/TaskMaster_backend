@@ -43,7 +43,7 @@ const sendMail = (email, subject, title, description, isReminder = false, isDele
 const scheduleEmail = (task) => {
     console.log("Scheduling email for task:", task);
     const job = cron.schedule(
-        moment(task.datetime).tz(task.userTimeZone).format('mm HH DD MM ddd'),
+        moment(task.datetime).format('mm HH DD MM ddd'),
         async function() {
             const { email, title, description } = task;
             try {
