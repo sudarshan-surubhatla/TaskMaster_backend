@@ -61,7 +61,7 @@ const scheduleEmail = (task) => {
 const addTask = async (req, res) => {
     const { title, description, datetime, userTimeZone } = req.body;
     const userId = req.user.id;
-    const istDateTime = moment(datetime).tz('Asia/Kolkata').format();
+  const utcDateTime = moment(datetime).tz(utc).format();
     try {
         const user = await userModel.find({ _id: userId });
         if (!user || user.length === 0) {
