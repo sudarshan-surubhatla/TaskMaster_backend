@@ -53,7 +53,9 @@ const scheduleEmail = (task) => {
 
     console.log('Reminder email will be sent after:', delayMilliseconds, 'milliseconds');
 
-    setTimeout(async () => {
+    const scheduledTime = reminderTime.toDate();
+
+    const sendReminder = async () => {
         try {
             console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
             console.log('Task details:', task);
@@ -66,7 +68,15 @@ const scheduleEmail = (task) => {
             console.error('Error sending email:', error.message);
             console.error('Error stack:', error.stack);
         }
-    }, delayMilliseconds);
+    };
+
+    const timeUntilScheduledTime = scheduledTime - now;
+
+    if (timeUntilScheduledTime > 0) {
+        setTimeout(sendReminder, timeUntilScheduledTime);
+    } else {
+        console.error('Scheduled time has already passed. Cannot schedule the reminder.');
+    }
 };
 
 
