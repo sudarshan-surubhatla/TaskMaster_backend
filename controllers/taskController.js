@@ -45,14 +45,8 @@ const sendMail = async (email, subject, title, description, isReminder, isDelete
 
 const scheduleEmail = (task) => {
     console.log("Scheduling email for task...");
-    
+
     const reminderTime = moment(task.datetime).subtract(5, 'hours').subtract(30, 'minutes');
-    const now = moment();
-
-    const delayMilliseconds = reminderTime.diff(now);
-
-    console.log('Reminder email will be sent after:', delayMilliseconds, 'milliseconds');
-
     const scheduledTime = reminderTime.toDate();
 
     const sendReminder = async () => {
@@ -70,10 +64,10 @@ const scheduleEmail = (task) => {
         }
     };
 
-    const timeUntilScheduledTime = scheduledTime - now;
+    const delayMilliseconds = scheduledTime - new Date();
 
-    if (timeUntilScheduledTime > 0) {
-        setTimeout(sendReminder, timeUntilScheduledTime);
+    if (delayMilliseconds > 0) {
+        setTimeout(sendReminder, delayMilliseconds);
     } else {
         console.error('Scheduled time has already passed. Cannot schedule the reminder.');
     }
