@@ -61,13 +61,16 @@ const scheduleEmail = (task) => {
 const addTask = async (req, res) => {
     const { title, description, datetime, userTimeZone } = req.body;
     const userId = req.user.id;
-  const utcDateTime = moment.utc(datetime).format();
+    const adjustedDateTime = moment(datetime).subtract(5, 'hours').subtract(30, 'minutes');
+    const utcDateTime = adjustedDateTime.utc().format();
+    
     try {
         const user = await userModel.find({ _id: userId });
         if (!user || user.length === 0) {
             console.error("User not found for ID:", userId);
             return res.status(404).json({ message: "User not found" });
         }
+        
         const newTask = new taskModel({
             title,
             description,
@@ -75,18 +78,53 @@ const addTask = async (req, res) => {
             completed: false,
             userId,
             userTimeZone,
-            email: user[0].email, 
+            email: user[0].email,
         });
 
         const savedTask = await newTask.save();
         sendMail(user[0].email, "Task Added", title, description);
-        scheduleEmail(savedTask); 
+        scheduleEmail(savedTask);
+        
         return res.status(200).json({ message: "Task added successfully" });
     } catch (error) {
         console.error("Error adding task:", error);
         return res.status(500).json({ message: error.message });
     }
 };
+const addTask = async (req, res) => {
+    const { title, description, datetime, userTimeZone } = req.body;
+    const userId = req.user.id;
+    const adjustedDateTime = moment(datetime).subtract(5, 'hours').subtract(30, 'minutes');
+    const utcDateTime = adjustedDateTime.utc().format();
+    
+    try {
+        const user = await userModel.find({ _id: userId });
+        if (!user || user.length === 0) {
+            console.error("User not found for ID:", userId);
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        const newTask = new taskModel({
+            title,
+            description,
+            datetime: utcDateTime,
+            completed: false,
+            userId,
+            userTimeZone,
+            email: user[0].email,
+        });
+
+        const savedTask = await newTask.save();
+        sendMail(user[0].email, "Task Added", title, description);
+        scheduleEmail(savedTask);
+        
+        return res.status(200).json({ message: "Task added successfully" });
+    } catch (error) {
+        console.error("Error adding task:", error);
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 
 const removeTask = (req, res) => {
     const { id } = req.params;
