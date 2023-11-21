@@ -42,27 +42,28 @@ const sendMail = async (email, subject, title, description, isReminder, isDelete
     }
 };
 
-const scheduleEmail = (task) => {
+const scheduleEmail = (email, title, description, datetime) => {
     console.log("Scheduling email for task...");
-    const reminderTime = moment(task.datetime).subtract(5, 'hours').subtract(30, 'minutes');
+    const reminderTime = moment(datetime).subtract(5, 'hours').subtract(30, 'minutes');
     console.log('Reminder email will be sent at:', reminderTime.format('mm HH DD MM ddd'));
 
     const job = cron.schedule(
-        reminderTime.format('mm HH DD MM ddd'),
+        reminderTime.toDate(), // Use toDate() to get a JavaScript Date object
         async function () {
             try {
                 console.log('Scheduled function called at:', moment().format('mm HH DD MM ddd'));
-                console.log('Task details:', task);
+                console.log('Task details:', { email, title, description });
 
                 // Uncomment the line below if you want to test sending a reminder email
-                await sendMail(task.email, "Task Due Soon", task.title, task.description, true, false);
+                await sendMail(email, "Task Due Soon", title, description, true, false);
                 
                 console.log('Reminder Email sent successfully');
             } catch (error) {
                 console.error('Error sending email:', error.message);
                 console.error('Error stack:', error.stack);
             } finally {
-                job.stop();
+                // Uncomment the line below to stop the cron job after sending the reminder email
+                // job.stop();
             }
         },
         { scheduled: true }
