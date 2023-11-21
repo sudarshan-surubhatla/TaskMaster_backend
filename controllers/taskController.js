@@ -43,27 +43,35 @@ const sendMail = (email, subject, title, description, isReminder, isDeleted) => 
     });
 }
 
-// Function to schedule email for task reminder
 const scheduleEmail = (task) => {
     console.log("Scheduling email for task...");
     const reminderTime = moment(task.datetime).subtract(5, 'hours').subtract(30, 'minutes');
     console.log('Reminder email will be sent at:', reminderTime.format('mm HH DD MM ddd'));
+
     const job = cron.schedule(
         reminderTime.format('mm HH DD MM ddd'),
-        async function () {
+        function () {
             const { email, title, description } = task;
             try {
                 console.log('Schedule function called');
-                sendMail(email, "Task Due Soon", title, description, true, false);
-                console.log('Reminder Email sent successfully');
+                sendMail(email, "Task Due Soon", title, description, true, false)
+                    .then(() => {
+                        console.log('Reminder Email sent successfully');
+                        job.stop();
+                    })
+                    .catch((error) => {
+                        console.error('Error sending email:', error.message);
+                        job.stop();
+                    });
             } catch (error) {
-                console.error('Error sending email:', error.message);
+                console.error('Error in schedule function:', error.message);
+                job.stop();
             }
-            this.stop();
         },
         { scheduled: true }
     );
 };
+
 
 const addTask = async (req, res) => {
     const { title, description, datetime, userTimeZone } = req.body;
