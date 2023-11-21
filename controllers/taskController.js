@@ -42,10 +42,11 @@ const sendMail = (email, subject, title, description, isReminder, isDeleted) => 
 }
 const scheduleEmail = (task) => {
     console.log("Scheduling email for task...");
-    const reminderTime =moment.tz(task.datetime, task.userTimeZone).add(5, 'hours').add(30, 'minutes');
+    const reminderTime =moment(task.datetime).add(5, 'hours').add(30, 'minutes');
     console.log('Reminder email will be sent at:', reminderTime.format('mm HH DD MM ddd'));
+    const cronString = `${reminderTime.minutes()} ${reminderTime.hours()} ${reminderTime.date()} ${reminderTime.month() + 1} *`;
     const job = cron.schedule(
-        moment(task.datetime).add(5, 'hours').add(30, 'minutes').format('mm HH DD MM ddd'),
+       cronString ,
         async function() {
             const { email, title, description } = task;
             try {
