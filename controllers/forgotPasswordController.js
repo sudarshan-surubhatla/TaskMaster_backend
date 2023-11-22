@@ -17,7 +17,7 @@ const forgotPassword = async (req, res) => {
     user.resetToken = resetToken;
     await user.save();
 
-    const resetUrl = `http://localhost:3000/resetPassword?token=${resetToken}`;
+    const resetUrl = `https://your-taskmaster.vercel.app/resetPassword?token=${resetToken}`;
     var transporter = createTransport({
         service: 'gmail',
         host: 'smtp.gmail.com',
