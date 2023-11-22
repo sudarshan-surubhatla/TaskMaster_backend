@@ -25,13 +25,16 @@ const sendMail = async (email, subject, title, description, isReminder, isDelete
             html: `
                 <div style="font-family: 'Roboto', sans-serif; background-color: #f9f9f9; padding: 20px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
                 <h1 style="color: ${isDeleted ? '#FF5555' : '#007BFF'}; text-align: center; margin-bottom: 20px;">
-                        ${isDeleted ? 'Task Deleted' : isReminder ? 'Task Due Soon' : 'Task Added Successfully'}
+                        ${isDeleted ? 'Task Deleted' : isReminder ? 'Task Reminder' : 'Task Added Successfully'}
                     </h1>
                     <div style="background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
                         <h2 style="color: #333; margin-bottom: 10px;">Title: ${title}</h2>
                         <p style="color: #555; margin-bottom: 0;">Description: ${description}</p>
                     </div>
                     <p style="color: #777; font-size: 14px; text-align: center;">Thank you for using TaskMaster!</p>
+                     <div style="text-align: center;">
+                <a href="https://your-taskmaster.vercel.app/" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;">Visit TaskMaster</a>
+            </div>
                 </div>`
         };
 
@@ -43,31 +46,17 @@ const sendMail = async (email, subject, title, description, isReminder, isDelete
 };
 const scheduleEmail = (task) => {
     console.log("Scheduling email for task...");
-
-    // Assuming task.datetime is a string in the format 'November 22, 2023 12:42 AM'
     const datetimeFormat = { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-
-    // Parse the task.datetime using Intl.DateTimeFormat
     const parsedDatetime = new Date(task.datetime);
-
-    // Check if the parsing was successful
     if (isNaN(parsedDatetime.getTime())) {
         console.log("Unable to parse the datetime. Please check the format of task.datetime.");
         return;
     }
-
-    // Calculate the delay in milliseconds
     const delay = parsedDatetime - Date.now();
-
-    // Use setTimeout to schedule the email at the exact time
     setTimeout(async () => {
         try {
             console.log('Scheduled function called at:', new Intl.DateTimeFormat('en-US', datetimeFormat).format(new Date()));
-            console.log('Task details:', task);
-
-            // Ensure that task.email, task.title, and task.description exist
-            await sendMail(task.email, "Task Due Soon", task.title, task.description, true, false);
-
+            await sendMail(task.email, "Task Reminder", task.title, task.description, true, false);
             console.log('Reminder Email sent successfully');
         } catch (error) {
             console.error('Error sending email:', error.message);
@@ -75,9 +64,6 @@ const scheduleEmail = (task) => {
         }
     }, delay);
 };
-
-
-
 
 const addTask = async (req, res) => {
     const { title, description, datetime, userTimeZone } = req.body;
